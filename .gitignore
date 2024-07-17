@@ -166,3 +166,5 @@ cython_debug/
 demo/rtmdet_tiny_8xb32-300e_coco_20220902_112414-78e30dcc.pth
 demo/rtmdet_tiny_8xb32-300e_coco.py
 demo/outputs/*
+
+dataset/rdd2020/*

@@ -36,52 +36,64 @@ Optimized Road Damage Detection Challenge (IEEE Big Data Cup ORDDC'2024)
 
 ### Dataset
 - Download data from https://github.com/sekilab/RoadDamageDetector#dataset 
-  - Needed a fix to the downloaded Norway dataset: `zip --fixfix RDD2022_Norway.zip --out RDD2022_Norway_fixed.zip`
+  - Needed a [fix](https://github.com/sekilab/RoadDamageDetector//issues/57) to the downloaded Norway dataset: `zip --fixfix RDD2022_Norway.zip --out RDD2022_Norway_fixed.zip`
   ```bash 
     $ tree -L 3 RDD2022/
     RDD2022/
     ├── China_Drone
     │   └── train
     │       ├── annotations
-    │       └── images
+    │       │   └── xmls/*.xml
+    │       └── images/*.jpg
     ├── China_MotorBike
     │   ├── test
-    │   │   └── images
+    │   │   └── images/*.jpg
     │   └── train
     │       ├── annotations
-    │       └── images
+    │       │   └── xmls/*.xml
+    │       └── images/*.jpg
     ├── Czech
     │   ├── test
-    │   │   └── images
+    │   │   └── images/*.jpg
     │   └── train
     │       ├── annotations
-    │       └── images
+    │       │   └── xmls/*.xml
+    │       └── images/*.jpg
     ├── India
     │   ├── test
-    │   │   └── images
+    │   │   └── images/*.jpg
     │   └── train
     │       ├── annotations
-    │       └── images
+    │       │   └── xmls/*.xml
+    │       └── images/*.jpg
     ├── Japan
     │   ├── test
-    │   │   └── images
+    │   │   └── images/*.jpg
     │   └── train
     │       ├── annotations
-    │       └── images
+    │       │   └── xmls/*.xml
+    │       └── images/*.jpg
     ├── Norway
     │   ├── test
-    │   │   └── images
+    │   │   └── images/*.jpg
     │   └── train
     │       ├── annotations
-    │       └── images
+    │       │   └── xmls/*.xml
+    │       └── images/*.jpg
     └── United_States
         ├── test
-        │   └── images
+        │   └── images/*.jpg
         └── train
             ├── annotations
-            └── images
+            │   └── xmls/*.xml
+            └── images/*.jpg
   ```
 - Preparation
+  - Convert to COCO format
   ```bash
-
+  (rdd) orddc2024/dataset$ python dataset_cocofy.py
   ```
+  - Split 85:15 for train and validation
+  ```bash
+  # https://github.com/akarazniewicz/cocosplit/blob/master/cocosplit.py
+  ```  
