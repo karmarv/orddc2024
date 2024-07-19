@@ -39,6 +39,12 @@ ultralytics==8.2.31
 ultralytics-thop==0.2.8
 urllib3==2.2.1
 zipp==3.19.2
+fiftyone==0.24.1
+
+scikit-learn
+funcy
+argparse
+scikit-multilearn
 
 --extra-index-url https://download.pytorch.org/whl/cu116
 torch==1.13.1+cu116 

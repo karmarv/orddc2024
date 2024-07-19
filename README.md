@@ -89,11 +89,15 @@ Optimized Road Damage Detection Challenge (IEEE Big Data Cup ORDDC'2024)
             └── images/*.jpg
   ```
 - Preparation
-  - Convert to COCO format
+  - Convert VOC XML to COCO format
   ```bash
-  (rdd) orddc2024/dataset$ python dataset_cocofy.py
+  python dataset_cocofy.py
   ```
-  - Split 85:15 for train and validation
+  - Split 85:15 for train and validation using [cocosplit](https://github.com/akarazniewicz/cocosplit/blob/master/cocosplit.py)
   ```bash
-  # https://github.com/akarazniewicz/cocosplit/blob/master/cocosplit.py
+  python cocosplit.py --multi-class -s 0.8 ./rdd2022/coco/annotations/rdd2022_annotations.json ./rdd2022/coco/annotations/train.json ./rdd2022/coco/annotations/val.json
+  Saved 44006 entries in ./rdd2022/coco/annotations/train.json and 11001 in ./rdd2022/coco/annotations/val.json
+  100%|██████████████████████████████████████████████████████████████████| 21109/21109 [00:06<00:00, 3043.20it/s]
+  100%|██████████████████████████████████████████████████████████████████| 8246/8246 [00:01<00:00, 5901.35it/s]
+  Copied 21110 images in ./rdd2022/coco/annotations/train.json and 8247 in ./rdd2022/coco/annotations/val.json
   ```  
