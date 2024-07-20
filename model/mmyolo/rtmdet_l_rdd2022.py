@@ -12,9 +12,9 @@ dict(type='WandbVisBackend', init_kwargs={
 
 
 max_epochs = 100
-interval = 10
+interval = 5
 # Batch size of a single GPU during training
-train_batch_size_per_gpu = 4
+train_batch_size_per_gpu = 28
 val_batch_size_per_gpu = train_batch_size_per_gpu
 
 # -----data related-----
