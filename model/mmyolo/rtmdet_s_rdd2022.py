@@ -1,8 +1,7 @@
-_base_ = "./configs/rtmdet/rtmdet_m_syncbn_fast_8xb32-300e_coco.py"
+_base_ = "./configs/rtmdet/rtmdet_s_syncbn_fast_8xb32-300e_coco.py"
 
-#
+
 # https://mmengine.readthedocs.io/en/latest/api/visualization.html
-#
 _base_.visualizer.vis_backends = [
 dict(type='LocalVisBackend'),
 dict(type='TensorboardVisBackend'),
@@ -10,14 +9,12 @@ dict(type='WandbVisBackend', init_kwargs={
         'project': "rdd-mm",
         "reinit": True,}),]
 
-#
-# Train & Val - https://mmyolo.readthedocs.io/en/latest/get_started/15_minutes_object_detection.html
-#
 
-max_epochs = 100
+
+max_epochs = 150
 interval = 5
 # Batch size of a single GPU during training
-train_batch_size_per_gpu = 48
+train_batch_size_per_gpu = 80
 val_batch_size_per_gpu = train_batch_size_per_gpu
 
 # -----data related-----
@@ -39,7 +36,7 @@ metainfo = dict(classes=class_names, palette=[[255,255,100], [255,200,200], [255
 
 
 # load COCO pre-trained weight
-load_from = 'https://download.openmmlab.com/mmyolo/v0/rtmdet/rtmdet_m_syncbn_fast_8xb32-300e_coco/rtmdet_m_syncbn_fast_8xb32-300e_coco_20230102_135952-40af4fe8.pth'  # noqa
+load_from = 'https://download.openmmlab.com/mmyolo/v0/rtmdet/rtmdet_s_syncbn_fast_8xb32-300e_coco/rtmdet_s_syncbn_fast_8xb32-300e_coco_20221230_182329-0a8c901a.pth'  # noqa
 
 train_cfg = dict(
     max_epochs=max_epochs,
@@ -75,41 +72,3 @@ test_dataloader = val_dataloader
 # Modify metric related settings
 val_evaluator = dict(ann_file=data_root + val_ann_file, classwise=True)
 test_evaluator = val_evaluator
-
-
-
-#
-# TTA - https://mmyolo.readthedocs.io/en/latest/common_usage/tta.html
-#
-tta_img_scales = [(640, 640), (320, 320), (960, 960)]
-_multiscale_resize_transforms = [
-    dict(
-        type='Compose',
-        transforms=[
-            dict(type='YOLOv5KeepRatioResize', scale=s),
-            dict(
-                type='LetterResize',
-                scale=s,
-                allow_scale_up=False,
-                pad_val=dict(img=114))
-        ]) for s in tta_img_scales
-]
-tta_pipeline = [
-    dict(type='LoadImageFromFile'),
-    dict(
-        type='TestTimeAug',
-        transforms=[
-            _multiscale_resize_transforms,
-            [
-                dict(type='mmdet.RandomFlip', prob=1.),
-                dict(type='mmdet.RandomFlip', prob=0.)
-            ], [dict(type='mmdet.LoadAnnotations', with_bbox=True)],
-            [
-                dict(
-                    type='mmdet.PackDetInputs',
-                    meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape',
-                               'scale_factor', 'pad_param', 'flip',
-                               'flip_direction'))
-            ]
-        ])
-]

@@ -2,12 +2,26 @@
 Optimized Road Damage Detection Challenge (IEEE Big Data Cup ORDDC'2024)
 
 
+### Results
+- Inference
+  ```bash
+  
+  ``` 
 
 ### Experiments
+Strategy 
+- Identify a set of models for object detection 
+  - RTMDet
+  - YoloV9
+- Approach TTA - https://github.com/open-mmlab/mmyolo/blob/dev/docs/en/common_usage/tta.md
+- Add other tricks - https://github.com/open-mmlab/mmyolo/blob/main/docs/en/recommended_topics/training_testing_tricks.md
+- Approach ensemble for improved detections
+
 
 #### A. RTMDet 
 
 - First Trial
+
 
 
 
