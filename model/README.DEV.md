@@ -71,6 +71,25 @@ CUDA_VISIBLE_DEVICES=6,7 PORT=29601 ./tools/dist_train.sh rtmdet_m_rdd2022.py 2
 | D40      | 0.112 | 0.253  | 0.081  | 0.098 | 0.112 | 0.12  |
 +----------+-------+--------+--------+-------+-------+-------+
 ```
+- TTA evaluation on test data val batch size 4 
+```bash
+# Add --tta to dist_test.sh in test.py arguments
+CUDA_VISIBLE_DEVICES=4,5 PORT=29602 tools/dist_test.sh rtmdet_m_rdd2022.py  ./work_dirs/rtmdet_m_rdd2022/epoch_100.pth 2
+```
+  ```log
+  +----------+-------+--------+--------+-------+-------+-------+
+  | category | mAP   | mAP_50 | mAP_75 | mAP_s | mAP_m | mAP_l |
+  +----------+-------+--------+--------+-------+-------+-------+
+  | D00      | 0.148 | 0.314  | 0.118  | 0.084 | 0.125 | 0.192 |
+  | D10      | 0.176 | 0.37   | 0.14   | 0.087 | 0.139 | 0.291 |
+  | D20      | 0.188 | 0.359  | 0.171  | 0.107 | 0.076 | 0.205 |
+  | D40      | 0.106 | 0.243  | 0.075  | 0.097 | 0.105 | 0.117 |
+  +----------+-------+--------+--------+-------+-------+-------+
+  ```
+- RTMDet-M training with pipeline stage2 switch using custom hooks 20 epoch before end
+```bash
+TODO
+```
 
 #### Run - RTMDet-S
 ```
