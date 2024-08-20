@@ -161,6 +161,13 @@ def get_clean_basename(filename):
     clean_basename = "".join( x for x in basename if (x.isalnum() or x in "._-"))
     return clean_basename
 
+
+
+"""
+Usage: 
+- time python dataset_cocofy.py --rdd-home ./rdd2022/RDD2022_all_countries/ 
+
+"""
 if __name__ == "__main__":
     parser=argparse.ArgumentParser(description='Convert RDD2022 annotations to COCO dataset')
     parser.add_argument("--rdd-home",      type=str,  default="/data/workspace/orddc/data/RDD2022",   help="RDD2022 folder path")

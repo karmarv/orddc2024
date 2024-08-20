@@ -1,7 +1,13 @@
 
+## (A.) MMDetection - RTMDet
 
+#### Run - RTMDet-L
+```
+# Multi 2 GPU # XXX hours for b28 100 epochs
+CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29601 ./tools/dist_train.sh rtmdet_l_rdd2022.py 4
+```
 
-## MMYolo - RTMDet
+## (B.) MMYolo - RTMDet
 
 - Installation: https://github.com/open-mmlab/mmyolo/blob/main/docs/en/get_started/installation.md 
   ```bash

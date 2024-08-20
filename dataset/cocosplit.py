@@ -1,3 +1,4 @@
+import random
 import csv
 import os, json
 import argparse
@@ -7,6 +8,9 @@ from sklearn.model_selection import train_test_split
 from skmultilearn.model_selection import iterative_train_test_split
 import numpy as np
 from shutil import copyfile
+
+# Configuration and path
+random.seed(0) 
 
 def save_coco(file, info, licenses, images, annotations, categories):
     with open(file, 'wt', encoding='UTF-8') as coco:
@@ -96,8 +100,8 @@ def main(args):
             print("Saved {} entries in {} and {} in {}".format(len(X_train), args.train, len(X_test), args.test))
 
             # Copy images as per split
-            train_count = save_images(train_images, "./rdd2022/coco/train/images/", "./rdd2022/coco/images/")
-            test_count = save_images(test_images, "./rdd2022/coco/val/images/", "./rdd2022/coco/images/")
+            train_count = save_images(train_images, "./rdd2022/coco/train/images/", "./rdd2022/images/")
+            test_count = save_images(test_images, "./rdd2022/coco/val/images/", "./rdd2022/images/")
             print("Copied {} images in {} and {} in {}".format(train_count, args.train, test_count, args.test))
             
         else:
