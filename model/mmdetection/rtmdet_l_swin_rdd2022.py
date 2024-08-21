@@ -1,5 +1,6 @@
-# model/mmdetection/configs/rtmdet/rtmdet_l_8xb32-300e_coco.py
-_base_ = './configs/rtmdet/rtmdet_l_8xb32-300e_coco.py'
+# configs/rtmdet/rtmdet_l_swin_b_4xb32-100e_coco.py
+# configs/rtmdet/rtmdet_l_swin_b_p6_4xb16-100e_coco.py
+_base_ = './configs/rtmdet/rtmdet_l_swin_b_4xb32-100e_coco.py'
 
 
 # https://mmengine.readthedocs.io/en/latest/api/visualization.html
@@ -11,9 +12,9 @@ dict(type='WandbVisBackend', init_kwargs={
         "reinit": True,}),]
 
 
-max_epochs = 200
+max_epochs = 100
 stage2_num_epochs = 20
-base_lr = 0.004
+base_lr = 0.001
 interval = 5
 
 # Batch size of a single GPU during training
@@ -39,7 +40,7 @@ metainfo = dict(classes=class_names, palette=[[255,255,100], [255,200,200], [255
 # Model setup
 
 # load COCO pre-trained weight
-load_from = 'https://download.openmmlab.com/mmdetection/v3.0/rtmdet/rtmdet_l_8xb32-300e_coco/rtmdet_l_8xb32-300e_coco_20220719_112030-5a0be7c4.pth'  # noqa
+load_from = 'https://github.com/orange0-jp/orange-weights/releases/download/v0.1.0rtmdet-swin-convnext/rtmdet_l_swin_b_4xb32-100e_coco-0828ce5d.pth'  # noqa
 
 train_cfg = dict(
     max_epochs=max_epochs,
@@ -128,12 +129,7 @@ test_evaluator = val_evaluator
 
 
 # optimizer
-optim_wrapper = dict(
-    _delete_=True,
-    type='OptimWrapper',
-    optimizer=dict(type='AdamW', lr=base_lr, weight_decay=0.05),
-    paramwise_cfg=dict(
-        norm_decay_mult=0, bias_decay_mult=0, bypass_duplicate=True))
+optim_wrapper = dict(optimizer=dict(lr=base_lr))
 
 # learning rate
 param_scheduler = [
@@ -158,7 +154,7 @@ param_scheduler = [
 default_hooks = dict(
     checkpoint=dict(
         interval=interval,
-        max_keep_ckpts=30  # only keep latest 3 checkpoints
+        max_keep_ckpts=10  # only keep latest 3 checkpoints
     ))
 custom_hooks = [
     dict(

@@ -2,9 +2,25 @@
 ## (A.) MMDetection - RTMDet
 
 #### Run - RTMDet-L
-```
-# Multi 2 GPU # XXX hours for b28 100 epochs
+- Multi 4 GPU # 14 hours for b32 200 epochs
+```bash
 CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29601 ./tools/dist_train.sh rtmdet_l_rdd2022.py 4
+```
+- Test inference for submission to leaderboard
+```bash
+python test_results.py  ../../dataset/rdd2022/coco/test/images  ./rtmdet_l_rdd2022.py  ./work_dirs/rtmdet_l_rdd2022/epoch_200.pth  --out-dir ./work_dirs/rtmdet_l_rdd2022/rdd_test/  --to-labelme  --tta
+```
+
+#### Run - RTMDet-L
+- Multi 4 GPU # 14 hours for b32 200 epochs
+```bash
+CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29601 ./tools/dist_train.sh rtmdet_l_swin_rdd2022.py 4
+```
+
+#### Submission inference script
+```
+cd infer/
+python inference_script.py
 ```
 
 ## (B.) MMYolo - RTMDet
