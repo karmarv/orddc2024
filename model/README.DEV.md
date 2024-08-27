@@ -45,7 +45,7 @@ pip install fairscale
 CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29601 ./tools/dist_train.sh codetr_r50_rdd2022.py 4
 ```
 
-## (B.) MMYolo - RTMDet
+## (B.) MMYolo
 
 - Installation: https://github.com/open-mmlab/mmyolo/blob/main/docs/en/get_started/installation.md 
   ```bash
@@ -163,4 +163,40 @@ CUDA_VISIBLE_DEVICES=6,7 PORT=29601 ./tools/dist_train.sh rtmdet_s_rdd2022.py 2
 | D20      | 0.212 | 0.398  | 0.2    | 0.365 | 0.087 | 0.232 |
 | D40      | 0.11  | 0.247  | 0.074  | 0.107 | 0.112 | 0.118 |
 +----------+-------+--------+--------+-------+-------+-------+
+```
+
+
+
+## Yolov8
+
+  - Environment variables
+  ```
+  #export CUDA_HOME="/usr/local/cuda"     # 12.4
+  #export CUDA_HOME="/usr/local/cuda-12.1"
+  export CUDA_HOME="/usr/local/cuda-11.8"
+  export PATH=$CUDA_HOME/bin:$PATH
+  export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+  ```
+  - Test
+  ```
+  python -c 'import torch; from torch.utils.cpp_extension import CUDA_HOME; print(torch.__version__, torch.cuda.is_available(), CUDA_HOME)'
+  ```
+  - Python environment
+  ```
+  conda env remove -n yolo
+  conda create -n yolo python=3.9 -y
+  conda activate yolo
+  # Ensure CUDA 11.8
+  pip install -r requirements.txt
+  ```
+  ```
+  mim install "mmengine>=0.6.0"
+  mim install "mmcv>=2.0.0rc4,<2.1.0"
+  mim install "mmdet>=3.0.0,<4.0.0"
+  ```
+
+```
+# Multi 4 GPU # XXX hours for b80 150 epochs
+CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29601 ./tools/dist_train.sh yv8_m_rdd2022.py 4
+
 ```

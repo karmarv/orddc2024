@@ -21,19 +21,20 @@ val_ann_file = 'annotations/val.json'
 val_data_prefix = 'val/images/'  # Prefix of val image path
 
 class_names = ("D00", "D10", "D20", "D40", ) # dataset category name
-num_classes = len(class_names)               # Number of classes for classification
 # metainfo is a configuration that must be passed to the dataloader, otherwise it is invalid
 # palette is a display color for category at visualization
 # The palette length must be greater than or equal to the length of the classes
 metainfo = dict(classes=class_names, palette=[[255,255,100], [255,200,200], [255,50,0], [200,200,0]])
 
 # model settings
-
+num_classes = len(class_names)               # Number of classes for classification
+num_dec_layer = 6
+loss_lambda = 2.0
 # Batch size of a single GPU during training
 train_batch_size_per_gpu = 2
 val_batch_size_per_gpu = train_batch_size_per_gpu
 
-max_epochs = 15
+max_epochs = 12
 
 # load COCO pre-trained weight
 load_from = 'https://download.openmmlab.com/mmdetection/v3.0/codetr/co_dino_5scale_r50_lsj_8xb2_1x_coco/co_dino_5scale_r50_lsj_8xb2_1x_coco-69a72d67.pth'  # noqa
@@ -43,7 +44,73 @@ load_from = 'https://download.openmmlab.com/mmdetection/v3.0/codetr/co_dino_5sca
 # We also need to change the num_classes in head to match the dataset's annotation
 model = dict(
     use_lsj=False, 
-    data_preprocessor=dict(pad_mask=False, batch_augments=None)
+    data_preprocessor=dict(pad_mask=False, batch_augments=None),
+    query_head=dict(
+        type='CoDINOHead',
+        num_classes=num_classes),
+    roi_head=[
+        dict(
+            type='CoStandardRoIHead',
+            bbox_roi_extractor=dict(
+                type='SingleRoIExtractor',
+                roi_layer=dict(
+                    type='RoIAlign', output_size=7, sampling_ratio=0),
+                out_channels=256,
+                featmap_strides=[4, 8, 16, 32, 64],
+                finest_scale=56),
+            bbox_head=dict(
+                type='Shared2FCBBoxHead',
+                in_channels=256,
+                fc_out_channels=1024,
+                roi_feat_size=7,
+                num_classes=num_classes,
+                bbox_coder=dict(
+                    type='DeltaXYWHBBoxCoder',
+                    target_means=[0., 0., 0., 0.],
+                    target_stds=[0.1, 0.1, 0.2, 0.2]),
+                reg_class_agnostic=False,
+                reg_decoded_bbox=True,
+                loss_cls=dict(
+                    type='CrossEntropyLoss',
+                    use_sigmoid=False,
+                    loss_weight=1.0 * num_dec_layer * loss_lambda),
+                loss_bbox=dict(
+                    type='GIoULoss',
+                    loss_weight=10.0 * num_dec_layer * loss_lambda)))
+    ],
+    bbox_head=[
+        dict(
+            type='CoATSSHead',
+            num_classes=num_classes,
+            in_channels=256,
+            stacked_convs=1,
+            feat_channels=256,
+            anchor_generator=dict(
+                type='AnchorGenerator',
+                ratios=[1.0],
+                octave_base_scale=8,
+                scales_per_octave=1,
+                strides=[4, 8, 16, 32, 64, 128]),
+            bbox_coder=dict(
+                type='DeltaXYWHBBoxCoder',
+                target_means=[.0, .0, .0, .0],
+                target_stds=[0.1, 0.1, 0.2, 0.2]),
+            loss_cls=dict(
+                type='FocalLoss',
+                use_sigmoid=True,
+                gamma=2.0,
+                alpha=0.25,
+                loss_weight=1.0 * num_dec_layer * loss_lambda),
+            loss_bbox=dict(
+                type='GIoULoss',
+                loss_weight=2.0 * num_dec_layer * loss_lambda),
+            loss_centerness=dict(
+                type='CrossEntropyLoss',
+                use_sigmoid=True,
+                loss_weight=1.0 * num_dec_layer * loss_lambda)),
+    ],
+    
+
     )
 
 # Pipelines
