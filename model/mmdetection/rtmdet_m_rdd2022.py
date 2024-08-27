@@ -11,8 +11,8 @@ dict(type='WandbVisBackend', init_kwargs={
         "reinit": True,}),]
 
 
-max_epochs = 200
-stage2_num_epochs = 20
+max_epochs = 250
+stage2_num_epochs = 50
 base_lr = 0.004
 interval = 5
 

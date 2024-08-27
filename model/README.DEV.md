@@ -17,10 +17,32 @@ python test_results.py  ../../dataset/rdd2022/coco/test/images  ./rtmdet_l_rdd20
 CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29601 ./tools/dist_train.sh rtmdet_l_swin_rdd2022.py 4
 ```
 
+#### Run - RTMDet-M
+- Multi 4 GPU # 14 hours for b48 200 epochs
+```bash
+CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29601 ./tools/dist_train.sh rtmdet_m_rdd2022.py 4
+```
+```bash
+CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29601 ./tools/dist_train.sh rtmdet_m_rdd2022.py 4 --resume /home/rahul/workspace/vision/orddc2024/model/mmdetection/work_dirs/rtmdet_m_rdd2022/epoch_200.pth
+```
+- Test inference for submission to leaderboard
+```bash
+python test_results.py  ../../dataset/rdd2022/coco/test/images  ./rtmdet_m_rdd2022.py  ./work_dirs/rtmdet_m_rdd2022/epoch_200.pth  --out-dir ./work_dirs/rtmdet_m_rdd2022/rdd_test/  --to-labelme  --tta
+```
+
 #### Submission inference script
 ```
 cd infer/
 python inference_script.py
+```
+
+
+## (A.) MMDetection - CoDETR
+
+- Multi 4 GPU # 14 hours for b32 200 epochs
+```bash
+pip install fairscale
+CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29601 ./tools/dist_train.sh codetr_r50_rdd2022.py 4
 ```
 
 ## (B.) MMYolo - RTMDet
