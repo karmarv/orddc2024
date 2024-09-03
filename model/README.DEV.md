@@ -98,7 +98,10 @@ CUDA_VISIBLE_DEVICES=4,5 PORT=29602 tools/dist_test.sh rtmdet_m_rdd2022.py  ./wo
   | D40      | 0.106 | 0.243  | 0.075  | 0.097 | 0.105 | 0.117 |
   +----------+-------+--------+--------+-------+-------+-------+
   ```
-- RTMDet-M training with pipeline stage2 switch using custom hooks 20 epoch before end
+- RTMDet-M training with pipeline stage2 switch using custom hooks 40 epoch before end
+```bash
+CUDA_VISIBLE_DEVICES=4,5 PORT=29601 ./tools/dist_train.sh rtmdet_m_rdd2022.py 2
+```
 ```bash
 TODO
 ```

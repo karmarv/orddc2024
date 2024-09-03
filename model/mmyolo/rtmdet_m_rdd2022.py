@@ -14,11 +14,11 @@ dict(type='WandbVisBackend', init_kwargs={
 # Train & Val - https://mmyolo.readthedocs.io/en/latest/get_started/15_minutes_object_detection.html
 #
 # ========================training configurations======================
-work_dir = './work_dirs/rtmdet_m_rdd_pipeswitch'
-max_epochs = 100
+work_dir = './work_dirs/rtmdet_m_rdd_stg'
+max_epochs = 250
 interval = 5
 # Batch size of a single GPU during training
-train_batch_size_per_gpu = 48
+train_batch_size_per_gpu = 50
 val_batch_size_per_gpu = train_batch_size_per_gpu
 
 # -----data related-----
@@ -69,12 +69,6 @@ mixup_max_cached_images = 20
 train_pipeline = [
     dict(type='LoadImageFromFile', backend_args=_base_.backend_args),
     dict(type='LoadAnnotations', with_bbox=True),
-    dict(
-        type='Mosaic',
-        img_scale=img_scale,
-        use_cached=True,
-        max_cached_images=mosaic_max_cached_images,
-        pad_val=114.0),
     dict(
         type='mmdet.RandomResize',
         # img_scale is (width, height)
@@ -136,6 +130,12 @@ test_dataloader = val_dataloader
 val_evaluator = dict(ann_file=data_root + val_ann_file, classwise=True)
 test_evaluator = val_evaluator
 
+# hooks
+default_hooks = dict(
+    checkpoint=dict(
+        interval=interval,
+        max_keep_ckpts=30  # only keep latest 3 checkpoints
+    ))
 custom_hooks = [
     dict(
         type='EMAHook',
@@ -146,7 +146,7 @@ custom_hooks = [
         priority=49),
     dict(
         type='mmdet.PipelineSwitchHook',
-        switch_epoch=max_epochs - _base_.num_epochs_stage2,
+        switch_epoch=max_epochs - 50,
         switch_pipeline=train_pipeline_stage2)
 ]
 
