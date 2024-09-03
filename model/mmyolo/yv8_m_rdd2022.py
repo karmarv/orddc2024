@@ -15,7 +15,7 @@ dict(type='WandbVisBackend', init_kwargs={
 #
 # ========================training configurations======================
 work_dir = './work_dirs/yolov8_m_rdd'
-max_epochs = 300
+max_epochs = 500
 # Disable mosaic augmentation for final 10 epochs (stage 2)
 close_mosaic_epochs = 20
 interval = 2

@@ -4,6 +4,8 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 import mmcv
+import cv2 
+
 from mmdet.apis import inference_detector, init_detector
 from mmengine.config import Config, ConfigDict
 from mmengine.logging import print_log
@@ -12,7 +14,7 @@ from mmengine.utils import ProgressBar, path
 from mmdet.utils.misc import get_file_list
 
 """
-python test_results.py  ../../dataset/rdd2022/coco/test/images  ./rtmdet_l_rdd2022.py  ./work_dirs/rtmdet_l_rdd2022/epoch_200.pth  --out-dir ./work_dirs/rtmdet_l_rdd2022/rdd_test/  --to-labelme 
+python test_results.py  ../../dataset/rdd2022/coco/test/images  ./rtmdet_l_rdd2022.py  ./work_dirs/rtmdet_l_rdd2022/epoch_200.pth  --out-dir ./work_dirs/rtmdet_l_rdd2022/rdd_test/  --to-labelme --tta --device cuda:3
 
 """
 
@@ -95,9 +97,6 @@ def main():
     model = init_detector(
         config, args.checkpoint, device=args.device, cfg_options={})
 
-    if not args.show:
-        path.mkdir_or_exist(args.out_dir)
-
     # get file list
     files, source_type = get_file_list(args.img)
 
@@ -124,39 +123,36 @@ def main():
         img = mmcv.imread(file)
         img = mmcv.imconvert(img, 'bgr', 'rgb')
 
-        if source_type['is_dir']:
-            filename = os.path.relpath(file, args.img).replace('/', '_')
-        else:
-            filename = os.path.basename(file)
-        out_file = None if args.show else os.path.join(args.out_dir, filename)
-
         progress_bar.update()
-
         # Get candidate predict info with score threshold
         pred_instances = result.pred_instances[
             result.pred_instances.scores > args.score_thr]
 
         if args.to_labelme:
-            # save result to labelme files
-            out_file = out_file.replace(
-                os.path.splitext(out_file)[-1], '.json')
-            
             # Add results to CSV file
-            pred_string = ""
+            pred_array = []
             for idx, pred in enumerate(pred_instances):
                 scores = pred.scores.tolist()
                 bboxes = pred.bboxes.tolist()
                 labels = pred.labels.tolist()
-                bbox_str = ' '.join(map(str, map(int, bboxes[0])))
                 #print(" Score:", scores[0], "\tBbox:", bbox_str, "\tLabel:", dataset_classes[labels[0]])
-                pred_string += "{} {} ".format(int(labels[0])+1, bbox_str)
-            
+                x1,y1,x2,y2 = map(int, bboxes[0])
+                pred_array.append([scores[0], labels[0], x1, y1, x2, y2])
+                cv2.rectangle(img, (x1,y1), (x2,y2), (0,255,0), 3)
+                cv2.putText(img, "{}-{:.2f}".format(dataset_classes[labels[0]], scores[0]), (x1+2,y1+18), 0, 0.55, (0,255,0), 2)
+            # Sort and write the predictions
+            sorted_pred_array = sorted(pred_array, key=lambda x: x[0], reverse=False)
+            pred_string = ""
+            for item in sorted_pred_array:
+                score, label, x1, y1, x2, y2 = item
+                pred_string += "{} {} {} {} {} ".format(int(label)+1, x1, y1, x2, y2)
             # Result row item format as per https://orddc2024.sekilab.global/submissions/
             rdd_results.append([os.path.basename(file), pred_string])
             #if len(pred_string)>0 and idx>3:
             #    print(rdd_results)
             #    exit(0)
-            
+            if len(pred_string)>0:
+                mmcv.imwrite(img, os.path.join(args.out_dir, "pred_{}.jpg".format(os.path.basename(file))))
             continue
 
     if args.to_labelme:

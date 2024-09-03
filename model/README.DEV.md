@@ -30,12 +30,6 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29601 ./tools/dist_train.sh rtmdet_m_rdd2022.p
 python test_results.py  ../../dataset/rdd2022/coco/test/images  ./rtmdet_m_rdd2022.py  ./work_dirs/rtmdet_m_rdd2022/epoch_200.pth  --out-dir ./work_dirs/rtmdet_m_rdd2022/rdd_test/  --to-labelme  --tta
 ```
 
-#### Submission inference script
-```
-cd infer/
-python inference_script.py
-```
-
 
 ## (A.) MMDetection - CoDETR
 
@@ -63,19 +57,6 @@ CUDA_VISIBLE_DEVICES=6,7 PORT=29601 ./tools/dist_train.sh rtmdet_l_rdd2022.py 2
 ```
 > 07/19 08:19:17 --> 07/20 01:34:34
 ```log
- Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.159
- Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.324
- Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.137
- Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.081
- Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.118
- Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.206
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.260
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.487
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.562
- Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.386
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.526
- Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.628
-07/20 01:34:30 - mmengine - INFO -
 +----------+-------+--------+--------+-------+-------+-------+
 | category | mAP   | mAP_50 | mAP_75 | mAP_s | mAP_m | mAP_l |
 +----------+-------+--------+--------+-------+-------+-------+
@@ -93,19 +74,6 @@ CUDA_VISIBLE_DEVICES=6,7 PORT=29601 ./tools/dist_train.sh rtmdet_m_rdd2022.py 2
 ```
 > 07/20 11:49:30 --> 07/20 21:48:01
 ```log
- Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.179
- Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.352
- Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.159
- Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.144
- Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.127
- Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.236
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.272
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.505
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.577
- Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.432
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.537
- Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.642
-07/20 21:47:57 - mmengine - INFO -
 +----------+-------+--------+--------+-------+-------+-------+
 | category | mAP   | mAP_50 | mAP_75 | mAP_s | mAP_m | mAP_l |
 +----------+-------+--------+--------+-------+-------+-------+
@@ -142,19 +110,6 @@ CUDA_VISIBLE_DEVICES=6,7 PORT=29601 ./tools/dist_train.sh rtmdet_s_rdd2022.py 2
 ```
 > 1 07/21 06:33:27  --> 07/22 03:41:05
 ```log
- Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.180
- Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.350
- Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.159
- Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.161
- Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.127
- Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.237
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.275
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.505
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.574
- Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.442
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.529
- Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.640
-07/22 03:41:01 - mmengine - INFO -
 +----------+-------+--------+--------+-------+-------+-------+
 | category | mAP   | mAP_50 | mAP_75 | mAP_s | mAP_m | mAP_l |
 +----------+-------+--------+--------+-------+-------+-------+
@@ -195,8 +150,13 @@ CUDA_VISIBLE_DEVICES=6,7 PORT=29601 ./tools/dist_train.sh rtmdet_s_rdd2022.py 2
   mim install "mmdet>=3.0.0,<4.0.0"
   ```
 
+#### Run 1 - 300 epochs
 ```
 # Multi 4 GPU # XXX hours for b80 150 epochs
 CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29601 ./tools/dist_train.sh yv8_m_rdd2022.py 4
 
+```
+- Test submission 
+``` 
+python test_results.py  ../../dataset/rdd2022/coco/test/images  ./yv8_m_rdd2022.py  ./work_dirs/yolov8_m_rdd/best_coco_D00_precision_epoch_300.pth  --out-dir ./work_dirs/yolov8_m_rdd/rdd_test/  --to-labelme --tta --device cuda:3
 ```

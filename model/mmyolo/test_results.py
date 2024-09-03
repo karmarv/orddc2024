@@ -4,18 +4,19 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 import mmcv
+import cv2 
+
 from mmdet.apis import inference_detector, init_detector
 from mmengine.config import Config, ConfigDict
 from mmengine.logging import print_log
 from mmengine.utils import ProgressBar, path
 
-from mmyolo.registry import VISUALIZERS
 from mmyolo.utils import switch_to_deploy
-from mmyolo.utils.labelme_utils import LabelmeFormat
 from mmyolo.utils.misc import get_file_list, show_data_classes
 
 """
 python test_results.py  ../../dataset/rdd2022/coco/test/images  ./rtmdet_m_rdd2022.py  ./work_dirs/rtmdet_m_rdd2022/epoch_100.pth  --out-dir ./work_dirs/rtmdet_m_rdd2022/rdd_test/  --to-labelme 
+python test_results.py  ../../dataset/rdd2022/coco/test/images  ./yv8_m_rdd2022.py  ./work_dirs/yolov8_m_rdd/best_coco_D00_precision_epoch_300.pth  --out-dir ./work_dirs/yolov8_m_rdd/rdd_test/  --to-labelme --tta
 
 """
 
@@ -104,18 +105,11 @@ def main():
     if not args.show:
         path.mkdir_or_exist(args.out_dir)
 
-    # init visualizer
-    visualizer = VISUALIZERS.build(model.cfg.visualizer)
-    visualizer.dataset_meta = model.dataset_meta
-
     # get file list
     files, source_type = get_file_list(args.img)
 
     # get model class name
     dataset_classes = model.dataset_meta.get('classes')
-
-    # ready for labelme format if it is needed
-    to_label_format = LabelmeFormat(classes=dataset_classes)
 
     # check class name
     if args.class_name is not None:
@@ -137,58 +131,39 @@ def main():
         img = mmcv.imread(file)
         img = mmcv.imconvert(img, 'bgr', 'rgb')
 
-        if source_type['is_dir']:
-            filename = os.path.relpath(file, args.img).replace('/', '_')
-        else:
-            filename = os.path.basename(file)
-        out_file = None if args.show else os.path.join(args.out_dir, filename)
-
         progress_bar.update()
-
         # Get candidate predict info with score threshold
         pred_instances = result.pred_instances[
             result.pred_instances.scores > args.score_thr]
 
         if args.to_labelme:
-            # save result to labelme files
-            out_file = out_file.replace(
-                os.path.splitext(out_file)[-1], '.json')
-            to_label_format(pred_instances, result.metainfo, out_file,
-                            args.class_name)
-            
             # Add results to CSV file
-            pred_string = ""
+            pred_array = []
             for idx, pred in enumerate(pred_instances):
                 scores = pred.scores.tolist()
                 bboxes = pred.bboxes.tolist()
                 labels = pred.labels.tolist()
-                bbox_str = ' '.join(map(str, map(int, bboxes[0])))
                 #print(" Score:", scores[0], "\tBbox:", bbox_str, "\tLabel:", dataset_classes[labels[0]])
-                pred_string += "{} {} ".format(int(labels[0])+1, bbox_str)
-            
+                x1,y1,x2,y2 = map(int, bboxes[0])
+                pred_array.append([scores[0], labels[0], x1, y1, x2, y2])
+                cv2.rectangle(img, (x1,y1), (x2,y2), (0,255,0), 3)
+                cv2.putText(img, "{}-{:.2f}".format(dataset_classes[labels[0]], scores[0]), (x1+2,y1+18), 0, 0.55, (0,255,0), 2)
+            # Sort and write the predictions
+            sorted_pred_array = sorted(pred_array, key=lambda x: x[0], reverse=False)
+            pred_string = ""
+            for item in sorted_pred_array:
+                score, label, x1, y1, x2, y2 = item
+                pred_string += "{} {} {} {} {} ".format(int(label)+1, x1, y1, x2, y2)
             # Result row item format as per https://orddc2024.sekilab.global/submissions/
             rdd_results.append([os.path.basename(file), pred_string])
             #if len(pred_string)>0 and idx>3:
             #    print(rdd_results)
             #    exit(0)
-            
+            if len(pred_string)>0:
+                mmcv.imwrite(img, os.path.join(args.out_dir, "pred_{}.jpg".format(os.path.basename(file))))
             continue
 
-        visualizer.add_datasample(
-            filename,
-            img,
-            data_sample=result,
-            draw_gt=False,
-            show=args.show,
-            wait_time=0,
-            out_file=out_file,
-            pred_score_thr=args.score_thr)
-
-    if not args.show and not args.to_labelme:
-        print_log(
-            f'\nResults have been saved at {os.path.abspath(args.out_dir)}')
-
-    elif args.to_labelme:
+    if args.to_labelme:
         print_log('\nLabelme format label files '
                   f'had all been saved in {args.out_dir}')
         write_list_file(os.path.join(args.out_dir, "..", "rdd_test.csv"), rdd_results)
