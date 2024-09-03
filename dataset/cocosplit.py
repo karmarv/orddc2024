@@ -63,6 +63,8 @@ parser.add_argument('--multi-class', dest='multi_class', action='store_true',
 
 args = parser.parse_args()
 
+
+
 def main(args):
 
     with open(args.annotations, 'rt', encoding='UTF-8') as annotations:
@@ -116,7 +118,10 @@ def main(args):
 
             print("Saved {} entries in {} and {} in {}".format(len(anns_train), args.train, len(anns_test), args.test))
             
-
+"""
+Usage: 
+python cocosplit.py --multi-class -s 0.8 ./rdd2022/coco/annotations/rdd2022_annotations.json ./rdd2022/coco/annotations/train.json ./rdd2022/coco/annotations/val.json
+"""
 
 if __name__ == "__main__":
     main(args)

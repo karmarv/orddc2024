@@ -163,3 +163,19 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29601 ./tools/dist_train.sh yv8_m_rdd2022.py 4
 ``` 
 python test_results.py  ../../dataset/rdd2022/coco/test/images  ./yv8_m_rdd2022.py  ./work_dirs/yolov8_m_rdd/best_coco_D00_precision_epoch_300.pth  --out-dir ./work_dirs/yolov8_m_rdd/rdd_test/  --to-labelme --tta --device cuda:3
 ```
+
+
+
+
+## MMPretrain
+Improve the backbone with better features in pretraining
+
+Documentation: https://mmpretrain.readthedocs.io/en/stable/notes/pretrain_custom_dataset.html
+
+- Config: model/mmdetection/configs/rtmdet/classification/cspnext-m_8xb256-rsb-a1-600e_in1k.py 
+  - [model/mmdetection/configs/rtmdet/classification/README.md](mmdetection/configs/rtmdet/classification/README.md)
+
+```bash
+cd mmpretrain
+bash ./tools/dist_train.sh cspnext-m_8xb256-rsb-a1-600e_in1k.py 4
+```
