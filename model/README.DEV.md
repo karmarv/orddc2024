@@ -67,6 +67,15 @@ CUDA_VISIBLE_DEVICES=6,7 PORT=29601 ./tools/dist_train.sh rtmdet_l_rdd2022.py 2
 +----------+-------+--------+--------+-------+-------+-------+
 ```
 
+- RTMDet-L training with pipeline stage2 switch using custom hooks 40 epoch before end
+```bash
+CUDA_VISIBLE_DEVICES=4,5,6,7 PORT=29601 ./tools/dist_train.sh rtmdet_l_rdd2022.py 4
+```
+```bash
+TODO
+```
+
+
 #### Run - RTMDet-M
 ```
 # Multi 2 GPU # XXX hours for b48 100 epochs

@@ -11,10 +11,15 @@ dict(type='WandbVisBackend', init_kwargs={
 
 
 
-max_epochs = 100
+#
+# Train & Val - https://mmyolo.readthedocs.io/en/latest/get_started/15_minutes_object_detection.html
+#
+# ========================training configurations======================
+work_dir = './work_dirs/rtmdet_l_rdd_stg'
+max_epochs = 250
 interval = 5
 # Batch size of a single GPU during training
-train_batch_size_per_gpu = 28
+train_batch_size_per_gpu = 32
 val_batch_size_per_gpu = train_batch_size_per_gpu
 
 # -----data related-----
@@ -52,6 +57,55 @@ model = dict(
         )
     )
 
+
+# ========================modified parameters======================
+
+img_scale = _base_.img_scale
+# ratio range for random resize
+random_resize_ratio_range = (0.5, 2.0)
+# Number of cached images in mosaic
+mosaic_max_cached_images = 40
+# Number of cached images in mixup
+mixup_max_cached_images = 20
+
+train_pipeline = [
+    dict(type='LoadImageFromFile', backend_args=_base_.backend_args),
+    dict(type='LoadAnnotations', with_bbox=True),
+    dict(
+        type='mmdet.RandomResize',
+        # img_scale is (width, height)
+        scale=(img_scale[0] * 2, img_scale[1] * 2),
+        ratio_range=random_resize_ratio_range,  # note
+        resize_type='mmdet.Resize',
+        keep_ratio=True),
+    dict(type='mmdet.RandomCrop', crop_size=img_scale),
+    dict(type='mmdet.YOLOXHSVRandomAug'),
+    dict(type='mmdet.RandomFlip', prob=0.5),
+    dict(type='mmdet.Pad', size=img_scale, pad_val=dict(img=(114, 114, 114))),
+    dict(
+        type='YOLOv5MixUp',
+        use_cached=True,
+        max_cached_images=mixup_max_cached_images),
+    dict(type='mmdet.PackDetInputs')
+]
+
+train_pipeline_stage2 = [
+    dict(type='LoadImageFromFile', backend_args=_base_.backend_args),
+    dict(type='LoadAnnotations', with_bbox=True),
+    dict(
+        type='mmdet.RandomResize',
+        scale=img_scale,
+        ratio_range=random_resize_ratio_range,  # note
+        resize_type='mmdet.Resize',
+        keep_ratio=True),
+    dict(type='mmdet.RandomCrop', crop_size=img_scale),
+    dict(type='mmdet.YOLOXHSVRandomAug'),
+    dict(type='mmdet.RandomFlip', prob=0.5),
+    dict(type='mmdet.Pad', size=img_scale, pad_val=dict(img=(114, 114, 114))),
+    dict(type='mmdet.PackDetInputs')
+]
+
+
 # RDD COCO data loader
 train_dataloader = dict(
     batch_size=train_batch_size_per_gpu,
@@ -59,16 +113,83 @@ train_dataloader = dict(
         data_root=data_root,
         metainfo=metainfo,
         ann_file=train_ann_file,
-        data_prefix=dict(img=train_data_prefix)))
+        data_prefix=dict(img=train_data_prefix),
+        filter_cfg=dict(filter_empty_gt=False, min_size=32), # Config of filtering images and annotations
+        pipeline=train_pipeline
+        ))
 val_dataloader = dict(
     batch_size=val_batch_size_per_gpu,
     dataset=dict(
         data_root=data_root,
         metainfo=metainfo,
         ann_file=val_ann_file,
-        data_prefix=dict(img=val_data_prefix)))
+        data_prefix=dict(img=val_data_prefix),
+        filter_cfg=dict(filter_empty_gt=False, min_size=32) # Config of filtering images and annotations
+        ))
 test_dataloader = val_dataloader
 
 # Modify metric related settings
 val_evaluator = dict(ann_file=data_root + val_ann_file, classwise=True)
 test_evaluator = val_evaluator
+
+# hooks
+default_hooks = dict(
+    checkpoint=dict(
+        interval=interval,
+        max_keep_ckpts=30  # only keep latest 3 checkpoints
+    ))
+custom_hooks = [
+    dict(
+        type='EMAHook',
+        ema_type='ExpMomentumEMA',
+        momentum=0.0002,
+        update_buffers=True,
+        strict_load=False,
+        priority=49),
+    dict(
+        type='mmdet.PipelineSwitchHook',
+        switch_epoch=max_epochs - 50,
+        switch_pipeline=train_pipeline_stage2)
+]
+
+
+#
+# TTA - https://mmyolo.readthedocs.io/en/latest/common_usage/tta.html
+#
+tta_img_scales = [(640, 640), (320, 320), (960, 960)]
+
+tta_model = dict(
+    type='mmdet.DetTTAModel',
+    tta_cfg=dict(nms=dict(type='nms', iou_threshold=0.65), max_per_img=300))
+
+_multiscale_resize_transforms = [
+    dict(
+        type='Compose',
+        transforms=[
+            dict(type='YOLOv5KeepRatioResize', scale=s),
+            dict(
+                type='LetterResize',
+                scale=s,
+                allow_scale_up=False,
+                pad_val=dict(img=114))
+        ]) for s in tta_img_scales
+]
+tta_pipeline = [
+    dict(type='LoadImageFromFile'),
+    dict(
+        type='TestTimeAug',
+        transforms=[
+            _multiscale_resize_transforms,
+            [
+                dict(type='mmdet.RandomFlip', prob=1.),
+                dict(type='mmdet.RandomFlip', prob=0.)
+            ], [dict(type='mmdet.LoadAnnotations', with_bbox=True)],
+            [
+                dict(
+                    type='mmdet.PackDetInputs',
+                    meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape',
+                               'scale_factor', 'pad_param', 'flip',
+                               'flip_direction'))
+            ]
+        ])
+]
