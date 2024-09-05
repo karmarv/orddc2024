@@ -41,7 +41,9 @@ metainfo = dict(classes=class_names, palette=[[255,255,100], [255,200,200], [255
 
 
 # load COCO pre-trained weight
-load_from = 'https://download.openmmlab.com/mmyolo/v0/rtmdet/rtmdet_l_syncbn_fast_8xb32-300e_coco/rtmdet_l_syncbn_fast_8xb32-300e_coco_20230102_135928-ee3abdc4.pth'  # noqa
+#load_from = 'https://download.openmmlab.com/mmyolo/v0/rtmdet/rtmdet_l_syncbn_fast_8xb32-300e_coco/rtmdet_l_syncbn_fast_8xb32-300e_coco_20230102_135928-ee3abdc4.pth'  # noqa
+# mmpretrain cspnext-l checkpoint
+checkpoint =  "../mmpretrain/work_dirs/cspnext-l_8xb256-rsb-a1-600e_in1k/epoch_600.pth"
 
 train_cfg = dict(
     max_epochs=max_epochs,
@@ -50,6 +52,16 @@ train_cfg = dict(
 
 # We also need to change the num_classes in head to match the dataset's annotation
 model = dict(
+    backbone=dict(
+        # Since the checkpoint includes CUDA:0 data,
+        # it must be forced to set map_location.
+        # Once checkpoint is fixed, it can be removed.
+        init_cfg=dict(
+            type='Pretrained',
+            prefix='backbone.',
+            checkpoint=checkpoint,
+            map_location='cpu')
+        ),    
     bbox_head=dict(
         head_module=dict(
             num_classes=num_classes
@@ -156,7 +168,7 @@ custom_hooks = [
 #
 # TTA - https://mmyolo.readthedocs.io/en/latest/common_usage/tta.html
 #
-tta_img_scales = [(640, 640), (320, 320), (960, 960)]
+tta_img_scales = [(640, 640), (320, 320), (960, 960), (1280, 1280)]
 
 tta_model = dict(
     type='mmdet.DetTTAModel',

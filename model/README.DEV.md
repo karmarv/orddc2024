@@ -16,6 +16,11 @@ python test_results.py  ../../dataset/rdd2022/coco/test/images  ./rtmdet_l_rdd20
 ```bash
 CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29601 ./tools/dist_train.sh rtmdet_l_swin_rdd2022.py 4
 ```
+- Test inference for submission to leaderboard
+```bash
+#Sep/05/2024
+python test_results.py  ../../dataset/rdd2022/coco/test/images  ./rtmdet_l_rdd2022.py  ./work_dirs/rtmdet_l_rdd_stg/epoch_250.pth --out-dir ./work_dirs/rtmdet_l_rdd_stg/rdd_test/  --to-labelme  --tta --device cuda:0
+```
 
 #### Run - RTMDet-M
 - Multi 4 GPU # 14 hours for b48 200 epochs
@@ -29,7 +34,11 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29601 ./tools/dist_train.sh rtmdet_m_rdd2022.p
 ```bash
 python test_results.py  ../../dataset/rdd2022/coco/test/images  ./rtmdet_m_rdd2022.py  ./work_dirs/rtmdet_m_rdd2022/epoch_200.pth  --out-dir ./work_dirs/rtmdet_m_rdd2022/rdd_test/  --to-labelme  --tta
 ```
-
+- Test inference for submission to leaderboard
+```bash
+#Sep/05/2024
+python test_results.py  ../../dataset/rdd2022/coco/test/images  ./rtmdet_m_rdd2022.py  ./work_dirs/rtmdet_m_rdd_stg/epoch_250.pth  --out-dir ./work_dirs/rtmdet_m_rdd_stg/rdd_test/  --to-labelme  --tta --device cuda:0 --score-thr 0.4
+```
 
 ## (A.) MMDetection - CoDETR
 
@@ -71,10 +80,26 @@ CUDA_VISIBLE_DEVICES=6,7 PORT=29601 ./tools/dist_train.sh rtmdet_l_rdd2022.py 2
 ```bash
 CUDA_VISIBLE_DEVICES=4,5,6,7 PORT=29601 ./tools/dist_train.sh rtmdet_l_rdd2022.py 4
 ```
+```log
++----------+-------+--------+--------+-------+-------+-------+
+| category | mAP   | mAP_50 | mAP_75 | mAP_s | mAP_m | mAP_l |
++----------+-------+--------+--------+-------+-------+-------+
+| D00      | 0.216 | 0.395  | 0.206  | 0.109 | 0.171 | 0.284 |
+| D10      | 0.249 | 0.464  | 0.232  | 0.131 | 0.196 | 0.395 |
+| D20      | 0.242 | 0.441  | 0.228  | 0.315 | 0.112 | 0.262 |
+| D40      | 0.137 | 0.299  | 0.1    | 0.144 | 0.128 | 0.154 |
++----------+-------+--------+--------+-------+-------+-------+
+09/04 00:44:15 - mmengine - INFO - bbox_mAP_copypaste: 0.211 0.399 0.191 0.175 0.152 0.274
+09/04 00:44:17 - mmengine - INFO - Epoch(val) [250][65/65]    coco/D00_precision: 0.2160  coco/D10_precision: 0.2490  coco/D20_precision: 0.2420  coco/D40_precision: 0.1370  coco/bbox_mAP: 0.2110  coco/bbox_mAP_50: 0.3990  coco/bbox_mAP_75: 0.1910  coco/bbox_mAP_s: 0.1750  coco/bbox_mAP_m: 0.1520  coco/bbox_mAP_l: 0.2740  data_time: 0.0063  time: 0.4866
+```
+- RTMDet-L training with pipeline stage2 switch using custom hooks 40 epoch before end (mmpretrained checkpoint "../mmpretrain/work_dirs/cspnext-l_8xb256-rsb-a1-600e_in1k/epoch_600.pth")
 ```bash
-TODO
+CUDA_VISIBLE_DEVICES=4,5,6,7 PORT=29601 ./tools/dist_train.sh rtmdet_l_rdd2022.py 4
 ```
 
+```log
+
+```
 
 #### Run - RTMDet-M
 ```
