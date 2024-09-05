@@ -1,4 +1,5 @@
 
+import time
 import os, csv
 from argparse import ArgumentParser
 from pathlib import Path
@@ -141,7 +142,7 @@ def main():
                 cv2.rectangle(img, (x1,y1), (x2,y2), (0,255,0), 3)
                 cv2.putText(img, "{}-{:.2f}".format(dataset_classes[labels[0]], scores[0]), (x1+2,y1+18), 0, 0.55, (0,255,0), 2)
             # Sort and write the predictions
-            sorted_pred_array = sorted(pred_array, key=lambda x: x[0], reverse=False)
+            sorted_pred_array = sorted(pred_array, key=lambda x: x[0], reverse=True)
             pred_string = ""
             for item in sorted_pred_array:
                 score, label, x1, y1, x2, y2 = item
@@ -156,9 +157,11 @@ def main():
             continue
 
     if args.to_labelme:
-        print_log('\nLabelme format label files '
-                  f'had all been saved in {args.out_dir}')
-        write_list_file(os.path.join(args.out_dir, "..", "rdd_test.csv"), rdd_results)
+        timestr = time.strftime("%Y%m%d-%H%M%S")
+        outfile = "{}_{}_test.csv".format(timestr, os.path.basename(args.config))
+        print_log('\nLabelme format label images '
+                  f'had all been saved in {args.out_dir} and results file at {outfile}')
+        write_list_file(os.path.join(args.out_dir, "..", outfile), rdd_results)
 
 
 if __name__ == '__main__':

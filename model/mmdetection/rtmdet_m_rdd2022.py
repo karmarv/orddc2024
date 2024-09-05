@@ -10,14 +10,15 @@ dict(type='WandbVisBackend', init_kwargs={
         'project': "rdd-mm",
         "reinit": True,}),]
 
-
-max_epochs = 250
+# ========================training configurations======================
+work_dir = './work_dirs/rtmdet_m_rdd_stg'
+max_epochs = 300
 stage2_num_epochs = 50
 base_lr = 0.004
 interval = 5
 
 # Batch size of a single GPU during training
-train_batch_size_per_gpu = 48
+train_batch_size_per_gpu = 50
 val_batch_size_per_gpu = train_batch_size_per_gpu
 
 # -----data related-----
@@ -40,6 +41,8 @@ metainfo = dict(classes=class_names, palette=[[255,255,100], [255,200,200], [255
 
 # load COCO pre-trained weight
 load_from = 'https://download.openmmlab.com/mmdetection/v3.0/rtmdet/rtmdet_m_8xb32-300e_coco/rtmdet_m_8xb32-300e_coco_20220719_112220-229f527c.pth'  # noqa
+# mmpretrain cspnext-l checkpoint
+checkpoint =  "../mmpretrain/work_dirs/cspnext-m_8xb256-rsb-a1-600e_in1k/20240903_094527/epoch_600.pth"
 
 train_cfg = dict(
     max_epochs=max_epochs,
@@ -48,10 +51,28 @@ train_cfg = dict(
 
 # We also need to change the num_classes in head to match the dataset's annotation
 model = dict(
+    backbone=dict(
+        # Since the checkpoint includes CUDA:0 data,
+        # it must be forced to set map_location.
+        # Once checkpoint is fixed, it can be removed.
+        init_cfg=dict(
+            type='Pretrained',
+            prefix='backbone.',
+            checkpoint=checkpoint)
+        ),     
     bbox_head=dict(
         num_classes=num_classes
         )
     )
+
+# ========================modified parameters======================
+
+# ratio range for random resize
+random_resize_ratio_range = (0.5, 2.0)
+# Number of cached images in mosaic
+#mosaic_max_cached_images = 40
+# Number of cached images in mixup
+mixup_max_cached_images = 20
 
 # Pipelines
 
@@ -61,8 +82,10 @@ train_pipeline = [
     dict(type='CachedMosaic', img_scale=(640, 640), pad_val=114.0),
     dict(
         type='RandomResize',
-        scale=(1280, 1280),
-        ratio_range=(0.1, 2.0),
+        #scale=(1280, 1280),
+        #ratio_range=(0.1, 2.0),
+        scale=(640, 1280),
+        ratio_range=random_resize_ratio_range,  # note        
         keep_ratio=True),
     dict(type='RandomCrop', crop_size=(640, 640)),
     dict(type='YOLOXHSVRandomAug'),
@@ -72,7 +95,7 @@ train_pipeline = [
         type='CachedMixUp',
         img_scale=(640, 640),
         ratio_range=(1.0, 1.0),
-        max_cached_images=20,
+        max_cached_images=mixup_max_cached_images,
         pad_val=(114, 114, 114)),
     dict(type='PackDetInputs')
 ]
