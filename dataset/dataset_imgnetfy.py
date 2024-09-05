@@ -105,6 +105,7 @@ def copy_image_test(data_dir, output_dir):
 """
 Usage: 
 - time python dataset_imgnetfy.py --rdd-home ./rdd2022/RDD2022_all_countries/  --output-dir ./rdd2022/imgnet
+- time python dataset_imgnetfy.py --rdd-home ./rdd2022/RDD2022/ --output-dir ./rdd2022/imgnet
 
 """
 if __name__ == "__main__":

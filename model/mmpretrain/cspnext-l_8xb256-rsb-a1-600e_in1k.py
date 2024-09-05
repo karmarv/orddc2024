@@ -1,13 +1,13 @@
 _base_ = './cspnext-s_8xb256-rsb-a1-600e_in1k.py'
 
 model = dict(
-    backbone=dict(deepen_factor=0.67, widen_factor=0.75),
-    head=dict(in_channels=768))
+    backbone=dict(deepen_factor=1, widen_factor=1),
+    head=dict(in_channels=1024))
 
 
 max_epochs = 600
-data_root='/home/rahul/workspace/vision/orddc2024/dataset/rdd2022/imgnet/'
-
+#data_root='/home/rahul/workspace/vision/orddc2024/dataset/rdd2022/imgnet/'
+data_root='/home/rahul/workspace/vision/rdd/orddc2024/dataset/rdd2022/imgnet/'
 # dataset settings
 
 # >>>>>>>>>>>>>>> Override dataset settings here >>>>>>>>>>>>>>>>>>>
@@ -23,7 +23,7 @@ train_pipeline = [
     dict(type='PackInputs')
 ]
 train_dataloader = dict(
-    batch_size=64,
+    batch_size=384,
     sampler=dict(type='RepeatAugSampler', shuffle=True),
     dataset=dict(
         type='CustomDataset',
@@ -44,7 +44,7 @@ val_pipeline = [
     dict(type='PackInputs')
 ]
 val_dataloader = dict(
-    batch_size=64,
+    batch_size=96,
     sampler=dict(type='RepeatAugSampler', shuffle=True),
     dataset=dict(
         type='CustomDataset',
@@ -77,7 +77,7 @@ param_scheduler = [
     # main learning rate scheduler
     dict(
         type='CosineAnnealingLR',
-        T_max=max_epochs-10,
+        T_max=max_epochs-5,
         eta_min=1.0e-6,
         by_epoch=True,
         begin=5,

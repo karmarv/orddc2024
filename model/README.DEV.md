@@ -188,3 +188,8 @@ Documentation: https://mmpretrain.readthedocs.io/en/stable/notes/pretrain_custom
 cd mmpretrain
 bash ./tools/dist_train.sh cspnext-m_8xb256-rsb-a1-600e_in1k.py 4
 ```
+
+
+```bash
+CUDA_VISIBLE_DEVICES=4,5,6,7 PORT=29602  bash ./tools/dist_train.sh cspnext-l_8xb256-rsb-a1-600e_in1k.py 4
+```
