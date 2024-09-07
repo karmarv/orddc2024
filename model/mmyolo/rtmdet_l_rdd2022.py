@@ -15,15 +15,15 @@ dict(type='WandbVisBackend', init_kwargs={
 # Train & Val - https://mmyolo.readthedocs.io/en/latest/get_started/15_minutes_object_detection.html
 #
 # ========================training configurations======================
-work_dir = './work_dirs/rtmdet_l_rdd_stg'
-max_epochs = 250
+work_dir = './work_dirs/rtmdet_l_rdd_stg_plus'
+max_epochs = 300
 interval = 5
 # Batch size of a single GPU during training
 train_batch_size_per_gpu = 32
 val_batch_size_per_gpu = train_batch_size_per_gpu
 
 # -----data related-----
-data_root = '/home/rahul/workspace/vision/rdd/orddc2024/dataset/rdd2022/coco/'
+data_root = '/home/rahul/workspace/vision/rdd/orddc2024/dataset/rdd2022/coco_plus/'
 # Path of train annotation file
 train_ann_file = 'annotations/train.json'
 train_data_prefix = 'train/images/'  # Prefix of train image path
@@ -41,9 +41,9 @@ metainfo = dict(classes=class_names, palette=[[255,255,100], [255,200,200], [255
 
 
 # load COCO pre-trained weight
-#load_from = 'https://download.openmmlab.com/mmyolo/v0/rtmdet/rtmdet_l_syncbn_fast_8xb32-300e_coco/rtmdet_l_syncbn_fast_8xb32-300e_coco_20230102_135928-ee3abdc4.pth'  # noqa
+load_from = 'https://download.openmmlab.com/mmyolo/v0/rtmdet/rtmdet_l_syncbn_fast_8xb32-300e_coco/rtmdet_l_syncbn_fast_8xb32-300e_coco_20230102_135928-ee3abdc4.pth'  # noqa
 # mmpretrain cspnext-l checkpoint
-checkpoint =  "../mmpretrain/work_dirs/cspnext-l_8xb256-rsb-a1-600e_in1k/epoch_600.pth"
+#checkpoint =  "../mmpretrain/work_dirs/cspnext-l_8xb256-rsb-a1-600e_in1k/epoch_600.pth"
 
 train_cfg = dict(
     max_epochs=max_epochs,
@@ -52,16 +52,18 @@ train_cfg = dict(
 
 # We also need to change the num_classes in head to match the dataset's annotation
 model = dict(
-    backbone=dict(
-        # Since the checkpoint includes CUDA:0 data,
-        # it must be forced to set map_location.
-        # Once checkpoint is fixed, it can be removed.
-        init_cfg=dict(
-            type='Pretrained',
-            prefix='backbone.',
-            checkpoint=checkpoint,
-            map_location='cpu')
-        ),    
+
+    #backbone=dict(
+    #    # Since the checkpoint includes CUDA:0 data,
+    #    # it must be forced to set map_location.
+    #    # Once checkpoint is fixed, it can be removed.
+    #    init_cfg=dict(
+    #        type='Pretrained',
+    #        prefix='backbone.',
+    #        checkpoint=checkpoint,
+    #        map_location='cpu')
+    #    ),    
+
     bbox_head=dict(
         head_module=dict(
             num_classes=num_classes
