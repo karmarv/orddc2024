@@ -1,3 +1,42 @@
--r requirements/build.txt
--r requirements/optional.txt
--r requirements/runtime.txt
+pandas==2.0.3
+scikit-image==0.21.0
+onnxruntime-gpu==1.16.3
+opencv-python==4.10.0.82
+opencv-python-headless==4.10.0.82
+matplotlib>=3.6.1
+funcy==2.0
+wandb==0.17.0
+albumentations==1.4.6
+fiftyone==0.24.1
+setuptools==60.2.0
+numpy==1.26.4
+ipykernel
+tqdm
+tensorboard
+argparse
+scikit-multilearn
+pycocotools
+shapely
+terminaltables
+future
+prettytable
+openmim
+cython
+
+
+#--extra-index-url https://download.pytorch.org/whl/cu116
+#torch==1.13.1+cu116 
+#torchvision==0.14.1+cu116
+
+#--extra-index-url https://download.pytorch.org/whl/cu118
+#torch==2.0.1
+#torchvision==0.15.2
+
+
+--extra-index-url https://download.pytorch.org/whl/cu124
+torch==2.4.0 
+torchvision==0.19.0
+
+#--extra-index-url https://download.openmmlab.com/mmcv/dist/cu118/torch2.0/index.html
+#mmcv==2.0.1
+#mmdet==3.3.0

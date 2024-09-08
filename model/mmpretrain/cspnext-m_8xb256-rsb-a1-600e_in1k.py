@@ -6,7 +6,8 @@ model = dict(
 
 
 max_epochs = 600
-data_root='/home/rahul/workspace/vision/orddc2024/dataset/rdd2022/imgnet/'
+#data_root='/home/rahul/workspace/vision/orddc2024/dataset/rdd2022/imgnet/' #V1
+data_root='/home/rahul/workspace/vision/orddc2024/dataset/rdd2022/imgnet_plus/' #V2
 
 # dataset settings
 

@@ -58,6 +58,8 @@ def copy_image_by_annotations(data_file_desc, data_dir, output_dir):
 Usage: 
 - time python svrdd_imgnetfy.py --svrdd-home /data/workspace/orddc/data/svrdd/SVRDD_YOLO/  --output-dir ./rdd2022/svrdd/imgnet
 
+- time python svrdd_imgnetfy.py --svrdd-home /home/rahul/workspace/data/rdd/svrdd/SVRDD_YOLO/  --output-dir ./rdd2022/svrdd/imgnet
+
 (rdd)$ tree -L 2 rdd2022/svrdd/SVRDD_YOLO/
 rdd2022/svrdd/SVRDD_YOLO/
 ├── Chaoyang

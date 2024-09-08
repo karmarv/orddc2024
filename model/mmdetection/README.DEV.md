@@ -1,7 +1,8 @@
 ## Environment
   - Environment variables
   ```
-  export CUDA_HOME="/usr/local/cuda-12.1"
+  export CUDA_HOME="/usr/local/cuda"
+  export CUDA_HOME="/usr/local/cuda-11.8"
   export PATH=$CUDA_HOME/bin:$PATH
   export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
   ```
@@ -11,11 +12,11 @@
   ```
   - Python environment
   ```
-  conda env remove -n rdd
-  conda create -n rdd python=3.9 -y
-  conda activate rdd
-  # Ensure CUDA 12.1
-  pip install -r ../../requirements.txt
+  conda env remove -n mmdet -y
+  conda create -n mmdet python=3.10 -y
+  conda activate mmdet
+  # Ensure CUDA 11.8
+  pip install -r requirements.txt
   ```
   ```
   mim install "mmengine>=0.6.0"
@@ -23,6 +24,17 @@
   mim install "mmdet>=3.0.0,<4.0.0"
   ```
 
+- Alternate Python environment through virtualenv
+  ```
+  python3.10 -m virtualenv ~/dev/.venv_mmdet
+  source ~/dev/.venv_mmdet/bin/activate 
+  pip install -r requirements.txt
+  pip install mmcv==2.0.1 -f https://download.openmmlab.com/mmcv/dist/cu118/torch2.0/index.html
+  # mim install mmcv==2.1.0 -f https://download.openmmlab.com/mmcv/dist/cu118/torch2.1/index.html
+  pip install mmdet==3.3.0
+
+  deactivate  # to get out of environment
+  ```
 
 ## (A.) MMDetection - RTMDet
 
@@ -71,18 +83,10 @@ CUDA_VISIBLE_DEVICES=1,2,3 PORT=29601 ./tools/dist_train.sh rtmdet_m_rdd2022.py 
 
 ```
 
-
-## (A.) MMDetection - CoDETR
-
-- Multi 4 GPU # 14 hours for b32 200 epochs
+- RTMDet-M multiscale training with coco_plus augmented data
 ```bash
-pip install fairscale
-CUDA_VISIBLE_DEVICES=0,1,2,3 PORT=29601 ./tools/dist_train.sh codetr_r50_rdd2022.py 4
+CUDA_VISIBLE_DEVICES=1,2,3 PORT=29601 ./tools/dist_train.sh rtmdet_m_rdd2022.py 3
 ```
-
-
-
-
 
 
 ## MMPretrain

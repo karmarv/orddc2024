@@ -11,18 +11,18 @@ dict(type='WandbVisBackend', init_kwargs={
         "reinit": True,}),]
 
 # ========================training configurations======================
-work_dir = './work_dirs/rtmdet_m_rdd_stg'
+work_dir = './work_dirs/rtmdet_m_rdd_scale_plus'
 max_epochs = 300
 stage2_num_epochs = 50
-base_lr = 0.004
+base_lr = 0.001
 interval = 5
 
 # Batch size of a single GPU during training
-train_batch_size_per_gpu = 50
+train_batch_size_per_gpu = 4
 val_batch_size_per_gpu = train_batch_size_per_gpu
 
 # -----data related-----
-data_root = '/home/rahul/workspace/vision/orddc2024/dataset/rdd2022/coco/'
+data_root = '/home/rahul/workspace/vision/orddc2024/dataset/rdd2022/coco_plus/'
 # Path of train annotation file
 train_ann_file = 'annotations/train.json'
 train_data_prefix = 'train/images/'  # Prefix of train image path
@@ -42,7 +42,7 @@ metainfo = dict(classes=class_names, palette=[[255,255,100], [255,200,200], [255
 # load COCO pre-trained weight
 load_from = 'https://download.openmmlab.com/mmdetection/v3.0/rtmdet/rtmdet_m_8xb32-300e_coco/rtmdet_m_8xb32-300e_coco_20220719_112220-229f527c.pth'  # noqa
 # mmpretrain cspnext-l checkpoint
-checkpoint =  "../mmpretrain/work_dirs/cspnext-m_8xb256-rsb-a1-600e_in1k/20240903_094527/epoch_600.pth"
+#checkpoint =  "../mmpretrain/work_dirs/cspnext-m_8xb256-rsb-a1-600e_in1k/20240903_094527/epoch_600.pth"
 
 train_cfg = dict(
     max_epochs=max_epochs,
@@ -51,15 +51,15 @@ train_cfg = dict(
 
 # We also need to change the num_classes in head to match the dataset's annotation
 model = dict(
-    backbone=dict(
-        # Since the checkpoint includes CUDA:0 data,
-        # it must be forced to set map_location.
-        # Once checkpoint is fixed, it can be removed.
-        init_cfg=dict(
-            type='Pretrained',
-            prefix='backbone.',
-            checkpoint=checkpoint)
-        ),     
+    #backbone=dict(
+    #    # Since the checkpoint includes CUDA:0 data,
+    #    # it must be forced to set map_location.
+    #    # Once checkpoint is fixed, it can be removed.
+    #    init_cfg=dict(
+    #        type='Pretrained',
+    #        prefix='backbone.',
+    #        checkpoint=checkpoint)
+    #    ),     
     bbox_head=dict(
         num_classes=num_classes
         )
@@ -67,63 +67,26 @@ model = dict(
 
 # ========================modified parameters======================
 
-# ratio range for random resize
-random_resize_ratio_range = (0.5, 2.0)
-# Number of cached images in mosaic
-#mosaic_max_cached_images = 40
-# Number of cached images in mixup
-mixup_max_cached_images = 20
-
 # Pipelines
-
 train_pipeline = [
     dict(type='LoadImageFromFile', backend_args={{_base_.backend_args}}),
     dict(type='LoadAnnotations', with_bbox=True),
-    dict(type='CachedMosaic', img_scale=(640, 640), pad_val=114.0),
     dict(
-        type='RandomResize',
-        #scale=(1280, 1280),
-        #ratio_range=(0.1, 2.0),
-        scale=(640, 1280),
-        ratio_range=random_resize_ratio_range,  # note        
-        keep_ratio=True),
-    dict(type='RandomCrop', crop_size=(640, 640)),
+        type='RandomResize',        # multiscale by variable resize - https://mmcv.readthedocs.io/en/2.x/_modules/mmcv/transforms/processing.html#RandomResize
+        scale=[(640, 640), (1280, 1280)],
+        ratio_range=(0.5, 2.0),
+        keep_ratio=True),        
     dict(type='YOLOXHSVRandomAug'),
     dict(type='RandomFlip', prob=0.5),
-    dict(type='Pad', size=(640, 640), pad_val=dict(img=(114, 114, 114))),
-    dict(
-        type='CachedMixUp',
-        img_scale=(640, 640),
-        ratio_range=(1.0, 1.0),
-        max_cached_images=mixup_max_cached_images,
-        pad_val=(114, 114, 114)),
     dict(type='PackDetInputs')
 ]
 
 train_pipeline_stage2 = [
     dict(type='LoadImageFromFile', backend_args={{_base_.backend_args}}),
     dict(type='LoadAnnotations', with_bbox=True),
-    dict(
-        type='RandomResize',
-        scale=(640, 640),
-        ratio_range=(0.1, 2.0),
-        keep_ratio=True),
-    dict(type='RandomCrop', crop_size=(640, 640)),
     dict(type='YOLOXHSVRandomAug'),
     dict(type='RandomFlip', prob=0.5),
-    dict(type='Pad', size=(640, 640), pad_val=dict(img=(114, 114, 114))),
     dict(type='PackDetInputs')
-]
-
-test_pipeline = [
-    dict(type='LoadImageFromFile', backend_args={{_base_.backend_args}}),
-    dict(type='Resize', scale=(640, 640), keep_ratio=True),
-    dict(type='Pad', size=(640, 640), pad_val=dict(img=(114, 114, 114))),
-    dict(type='LoadAnnotations', with_bbox=True),
-    dict(
-        type='PackDetInputs',
-        meta_keys=('img_id', 'img_path', 'ori_shape', 'img_shape',
-                   'scale_factor'))
 ]
 
 # COCO data loader
@@ -134,15 +97,18 @@ train_dataloader = dict(
         metainfo=metainfo,
         ann_file=train_ann_file,
         data_prefix=dict(img=train_data_prefix),
-        pipeline=train_pipeline))
+        pipeline=train_pipeline
+        )
+    )
 val_dataloader = dict(
     batch_size=val_batch_size_per_gpu,
     dataset=dict(
         data_root=data_root,
         metainfo=metainfo,
         ann_file=val_ann_file,
-        data_prefix=dict(img=val_data_prefix),
-        pipeline=test_pipeline))
+        data_prefix=dict(img=val_data_prefix)
+        )
+    )
 test_dataloader = val_dataloader
 
 # Modify metric related settings
@@ -202,7 +168,7 @@ tta_model = dict(
     type='DetTTAModel',
     tta_cfg=dict(nms=dict(type='nms', iou_threshold=0.6), max_per_img=100))
 
-img_scales = [(640, 640), (320, 320), (960, 960)]
+img_scales = [(640, 640), (960, 960), (1280, 1280)]
 tta_pipeline = [
     dict(type='LoadImageFromFile', backend_args=None),
     dict(

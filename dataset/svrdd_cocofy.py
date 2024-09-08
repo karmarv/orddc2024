@@ -195,6 +195,9 @@ def get_coco_metadata():
 Usage: 
 - time python svrdd_cocofy.py --svrdd-home /data/workspace/orddc/data/svrdd/SVRDD_YOLO/  --output-dir ./rdd2022/coco_plus/ --coco-ext ./rdd2022/coco_plus/annotations/rdd2022_annotations.json
 
+- time python svrdd_cocofy.py --svrdd-home /home/rahul/workspace/data/rdd/svrdd/SVRDD_YOLO/  --output-dir ./rdd2022/coco_plus/ --coco-ext ./rdd2022/coco_plus/annotations/rdd2022_annotations.json
+
+
 (rdd)$ tree -L 2 rdd2022/svrdd/SVRDD_YOLO/
 rdd2022/svrdd/SVRDD_YOLO/
 ├── Chaoyang
