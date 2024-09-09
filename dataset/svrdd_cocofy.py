@@ -122,7 +122,7 @@ def copy_image_by_annotations(data_file_desc, data_dir, output_dir, output_split
                 lbl_id = ann["label_id"]
                 # 6 0.354492 0.649902 0.294922 0.024414
                 # 5 0.342773 0.602051 0.267578 0.079102
-                xc, yc, w, h = ann["x"]*img_w, ann["y"]+img_h, ann["w"]*img_w, ann["h"]*img_h
+                xc, yc, w, h = ann["x"]*img_w, ann["y"]*img_h, ann["w"]*img_w, ann["h"]*img_h
                 for key, val in SVRDD_DAMAGE_CATEGORIES.items():
                     if lbl_id == val["label_id"]:
                         lbl_seen[key] = ann["label_id"]
@@ -136,7 +136,10 @@ def copy_image_by_annotations(data_file_desc, data_dir, output_dir, output_split
                         ann_id   = GLOBAL_ANNOT_SEQ_ID = GLOBAL_ANNOT_SEQ_ID + 1
                         ann_info  = create_annotation_info(ann_id, image_id, coco_label_id, area, box)
                         gts_coco_labels["annotations"].append(ann_info)
-
+            #print(image_info)
+            #print("YOLO DF: \n",lbl_df)
+            #print("COCO: \n", gts_coco_labels["annotations"])
+            #break
             count = count + 1           
     return gts_coco_labels
 
@@ -193,7 +196,7 @@ def get_coco_metadata():
 
 """
 Usage: 
-- time python svrdd_cocofy.py --svrdd-home /data/workspace/orddc/data/svrdd/SVRDD_YOLO/  --output-dir ./rdd2022/coco_plus/ --coco-ext ./rdd2022/coco_plus/annotations/rdd2022_annotations.json
+- time python svrdd_cocofy.py --svrdd-home /data/workspace/orddc/data/svrdd/SVRDD_YOLO/  --output-dir ./rdd2022/coco_1kres_plus/ --coco-ext ./rdd2022/coco_1kres_plus/annotations/rdd2022_annotations.json
 
 - time python svrdd_cocofy.py --svrdd-home /home/rahul/workspace/data/rdd/svrdd/SVRDD_YOLO/  --output-dir ./rdd2022/coco_plus/ --coco-ext ./rdd2022/coco_plus/annotations/rdd2022_annotations.json
 

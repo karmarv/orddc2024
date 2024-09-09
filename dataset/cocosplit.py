@@ -66,6 +66,8 @@ args = parser.parse_args()
 
 
 def main(args):
+    images_dir = "./rdd2022/images/"
+    output_dir = os.path.join(os.path.dirname(args.annotations), "..")
 
     with open(args.annotations, 'rt', encoding='UTF-8') as annotations:
         coco = json.load(annotations)
@@ -102,8 +104,8 @@ def main(args):
             print("Saved {} entries in {} and {} in {}".format(len(X_train), args.train, len(X_test), args.test))
 
             # Copy images as per split
-            train_count = save_images(train_images, "./rdd2022/coco/train/images/", "./rdd2022/images/")
-            test_count = save_images(test_images, "./rdd2022/coco/val/images/", "./rdd2022/images/")
+            train_count = save_images(train_images, os.path.join(output_dir, "train", "images"), images_dir)
+            test_count = save_images(test_images, os.path.join(output_dir, "val", "images"), images_dir)
             print("Copied {} images in {} and {} in {}".format(train_count, args.train, test_count, args.test))
             
         else:
@@ -120,7 +122,12 @@ def main(args):
             
 """
 Usage: 
-python cocosplit.py --multi-class -s 0.8 ./rdd2022/coco/annotations/rdd2022_annotations.json ./rdd2022/coco/annotations/train.json ./rdd2022/coco/annotations/val.json
+V1: all countries data
+- python cocosplit.py --multi-class -s 0.8 ./rdd2022/coco/annotations/rdd2022_annotations.json ./rdd2022/coco/annotations/train.json ./rdd2022/coco/annotations/val.json
+V2: country specific
+- python cocosplit.py --multi-class -s 0.9 ./rdd2022/coco_1kres/annotations/rdd2022_annotations.json ./rdd2022/coco_1kres/annotations/train.json ./rdd2022/coco_1kres/annotations/val.json
+- python cocosplit.py --multi-class -s 0.9 ./rdd2022/coco_4kres/annotations/rdd2022_annotations.json ./rdd2022/coco_4kres/annotations/train.json ./rdd2022/coco_4kres/annotations/val.json
+
 """
 
 if __name__ == "__main__":

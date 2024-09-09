@@ -165,7 +165,11 @@ def get_clean_basename(filename):
 
 """
 Usage: 
-- time python dataset_cocofy.py --rdd-home ./rdd2022/RDD2022_all_countries/ 
+- time python dataset_cocofy.py --rdd-home ./rdd2022/RDD2022_all_countries/  --output-dir ./rdd2022/coco_1kres
+
+Country specific data extraction based on resolution
+- time python dataset_cocofy.py --rdd-home ./rdd2022/RDD2022/  --output-dir ./rdd2022/coco_1kres
+- time python dataset_cocofy.py --rdd-home ./rdd2022/RDD2022/  --output-dir ./rdd2022/coco_4kres
 
 """
 if __name__ == "__main__":
@@ -175,13 +179,18 @@ if __name__ == "__main__":
     args=parser.parse_args()
 
     rdd_path = args.rdd_home
-    countries = ["China_Drone", "China_MotorBike", "Czech", "India", "Japan", "Norway", "United_States"]
+    
+    all_countries = ["China_Drone", "China_MotorBike", "Czech", "India", "Japan", "Norway", "United_States"]
+    countries_1kres = ["China_Drone", "China_MotorBike", "Czech", "India", "Japan", "United_States"]
+    countries_4kres = ["Norway"]
+    
+    # TODO: Configure country specific extraction list here
+    read_countries = countries_4kres
     
     # Empty placeholders 
     train_ann_dict = get_coco_metadata("train")
-
     # Load annotations per country 
-    for idx, country in enumerate(countries):
+    for idx, country in enumerate(read_countries):
         print("{}.) {}".format(idx, country))
         data_dir = os.path.join(rdd_path, country)
         gts_coco_dict = load_country_annotations(data_dir)
