@@ -4,22 +4,19 @@ opencv-python==4.10.0.82
 opencv-python-headless==4.10.0.82
 matplotlib>=3.6.1
 funcy==2.0
+numpy==1.26.4
 tqdm
 argparse
 future
 prettytable
 openmim
-mmengine>=0.6.0
-numpy==1.26.4
 
 --extra-index-url https://download.pytorch.org/whl/cu118
 torch==2.0.1
 torchvision==0.15.2
 
-#--extra-index-url https://download.pytorch.org/whl/cu121
-#torch==2.1.0 
-#torchvision==0.16.0
-
 --extra-index-url https://download.openmmlab.com/mmcv/dist/cu118/torch2.0/index.html
-mmcv==2.0.1 
+mmcv==2.0.1
+mmengine==0.10.4
 mmdet==3.3.0
+mmyolo==0.6.0

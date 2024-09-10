@@ -168,5 +168,5 @@ demo/rtmdet_tiny_8xb32-300e_coco.py
 demo/outputs/*
 
 dataset/rdd2020/*
-infer/*.pth
 dataset/rdd2022
+*.pth

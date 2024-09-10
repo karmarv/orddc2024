@@ -12,18 +12,13 @@ from mmengine.config import Config, ConfigDict
 from mmengine.logging import print_log
 from mmengine.utils import ProgressBar, path
 
-from mmyolo.utils import switch_to_deploy
-from mmyolo.utils.misc import get_file_list, show_data_classes
+from mmdet.utils.misc import get_file_list
 
 """
 python test_results.py  ../../dataset/rdd2022/coco/test/images  ./rtmdet_m_rdd2022.py  ./work_dirs/rtmdet_m_rdd2022/epoch_100.pth  --out-dir ./work_dirs/rtmdet_m_rdd2022/rdd_test/  --to-labelme 
 python test_results.py  ../../dataset/rdd2022/coco/test/images  ./yv8_m_rdd2022.py  ./work_dirs/yolov8_m_rdd/best_coco_D00_precision_epoch_300.pth  --out-dir ./work_dirs/yolov8_m_rdd/rdd_test/  --to-labelme --tta
 
-Sep/05/2024
-python test_results.py  ../../dataset/rdd2022/coco/test/images  ./rtmdet_l_rdd2022.py  ./work_dirs/rtmdet_l_rdd_stg/epoch_250.pth --out-dir ./work_dirs/rtmdet_l_rdd_stg/rdd_test/  --to-labelme  --tta --device cuda:0
-python test_results.py  ../../dataset/rdd2022/coco/test/images  ./rtmdet_l_rdd2022.py  ./work_dirs/rtmdet_l_rdd_stg/epoch_250.pth --out-dir ./work_dirs/rtmdet_l_rdd_stg/rdd_test_04/  --to-labelme  --tta --device cuda:0 --score-thr 0.4
-
-python test_results.py  ../../dataset/rdd2022/coco/test/images  ./rtmdet_m_rdd2022.py  ./work_dirs/rtmdet_m_rdd_stg/epoch_250.pth  --out-dir ./work_dirs/rtmdet_m_rdd_stg/rdd_test/  --to-labelme  --tta --device cuda:0 --score-thr 0.4
+python test_results.py  ../../dataset/rdd2022/coco/test/overall_6_countries/  ./rtmdet_l_rdd2022.py  ./work_dirs/rtmdet_l_rdd_stg_plus/epoch_225.pth  --out-dir ./work_dirs/rtmdet_l_rdd_stg_plus/rdd_test/  --to-labelme  --device cuda:0 --score-thr 0.2
 """
 
 def parse_args():
@@ -105,9 +100,6 @@ def main():
     model = init_detector(
         config, args.checkpoint, device=args.device, cfg_options={})
 
-    if args.deploy:
-        switch_to_deploy(model)
-
     if not args.show:
         path.mkdir_or_exist(args.out_dir)
 
@@ -122,7 +114,7 @@ def main():
         for class_name in args.class_name:
             if class_name in dataset_classes:
                 continue
-            show_data_classes(dataset_classes)
+
             raise RuntimeError(
                 'Expected args.class_name to be one of the list, '
                 f'but got "{class_name}"')
