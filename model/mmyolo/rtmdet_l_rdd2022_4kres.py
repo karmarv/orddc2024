@@ -16,11 +16,11 @@ dict(type='WandbVisBackend', init_kwargs={
 #
 # ========================training configurations======================
 work_dir = './work_dirs/rtmdet_l_rdd_stg_4kres'
-max_epochs = 100
+max_epochs = 200
 interval = 5
-stage2_num_epochs = 30
+stage2_num_epochs = 50
 # Batch size of a single GPU during training
-train_batch_size_per_gpu = 8
+train_batch_size_per_gpu = 5
 val_batch_size_per_gpu = train_batch_size_per_gpu
 
 # -----data related-----
@@ -75,7 +75,7 @@ model = dict(
 
 # ========================modified parameters======================
 # img_scale is (width, height)
-img_scale = (1280, 1280)
+img_scale = (1600, 1600)
 # ratio range for random resize
 random_resize_ratio_range = (0.8, 2.0)
 # Number of cached images in mixup
