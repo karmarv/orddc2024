@@ -138,7 +138,7 @@ Above command upon execution should return `2.0.1 True /usr/local/cuda`
   20240929-165712 - Results written to /rdd/test_docker_m_thr29_JP2.csv file
   real    1m37.448s
   ```
-  - Run 2
+  - Run 3
   ```log
   100%| 2627/2627 [01:30<00:00, 29.00it/s]
   20240929-165910 - Results written to /rdd/test_docker_m_thr29_JP3.csv file
