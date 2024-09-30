@@ -228,6 +228,29 @@ Above command upon execution should return `2.0.1 True /usr/local/cuda`
   20240929-154447 - Results written to /rdd/test_docker_m_thr29_all3.csv file
   real    7m23.920s
   ```
+  - GPU usage
+  ```bash
+  Mon Sep 30 02:54:46 2024
+  +-----------------------------------------------------------------------------------------+
+  | NVIDIA-SMI 550.90.07              Driver Version: 550.90.07      CUDA Version: 12.4     |
+  |-----------------------------------------+------------------------+----------------------+
+  | GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+  | Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+  |                                         |                        |               MIG M. |
+  |=========================================+========================+======================|
+  |   0  Tesla T4                       On  |   00000000:00:1E.0 Off |                    0 |
+  | N/A   38C    P0             80W /   70W |     413MiB /  15360MiB |     53%      Default |
+  |                                         |                        |                  N/A |
+  +-----------------------------------------+------------------------+----------------------+
+
+  +-----------------------------------------------------------------------------------------+
+  | Processes:                                                                              |
+  |  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+  |        ID   ID                                                               Usage      |
+  |=========================================================================================|
+  |    0   N/A  N/A     27709      C   python                                        410MiB |
+  +-----------------------------------------------------------------------------------------+
+  ```
 
 #### (b.) allcountries-l
 
@@ -349,7 +372,7 @@ Above command upon execution should return `2.0.1 True /usr/local/cuda`
   export TEST_IMAGES="/home/ubuntu/rdd/Overall_6_countries/test"
   docker run -it --rm --gpus all -v ${TEST_IMAGES}:/rdd vishwakarmarhl/mmdet_orddc2024_infer /bin/bash -c "cd /infer/allcountries-l && time python inference_script.py /rdd/images /rdd/test_docker_l_thr21_all.csv"
   ```
-  - Run 1: output log
+  - Run 1: output log and 
   ```log
   20240929-142317 - Loading checkpoint ./mmy_rtml_pre_e250.pth to model
   Loads checkpoint by local backend from path: ./mmy_rtml_pre_e250.pth
@@ -371,4 +394,27 @@ Above command upon execution should return `2.0.1 True /usr/local/cuda`
   100%| 9035/9035 [10:27<00:00, 14.40it/s]
   20240929-172754 - Results written to /rdd/test_docker_l_thr21_all3.csv file
   real    10m35.711s
+  ```
+  - GPU usage
+  ```bash
+  Mon Sep 30 02:52:58 2024
+  +-----------------------------------------------------------------------------------------+
+  | NVIDIA-SMI 550.90.07              Driver Version: 550.90.07      CUDA Version: 12.4     |
+  |-----------------------------------------+------------------------+----------------------+
+  | GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+  | Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+  |                                         |                        |               MIG M. |
+  |=========================================+========================+======================|
+  |   0  Tesla T4                       On  |   00000000:00:1E.0 Off |                    0 |
+  | N/A   40C    P0             58W /   70W |     561MiB /  15360MiB |     83%      Default |
+  |                                         |                        |                  N/A |
+  +-----------------------------------------+------------------------+----------------------+
+
+  +-----------------------------------------------------------------------------------------+
+  | Processes:                                                                              |
+  |  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+  |        ID   ID                                                               Usage      |
+  |=========================================================================================|
+  |    0   N/A  N/A     27517      C   python                                        558MiB |
+  +-----------------------------------------------------------------------------------------+
   ```
