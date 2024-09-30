@@ -1,15 +1,17 @@
 
-# ORDDC 2024 Criteria for inference evaluation
-1. Instance Specification: The inference time of the submitted model is measured using an AWS EC2 instance of type "g4dn.xlarge".
-2. Execution of Inference Script: The submitted inference script will be executed in subprocess module of Python.
-3. Evaluation Scope: The inference script is executed for these countries:
+# ORDDC 2024 inference speed evaluation
+
+## Criteria/Pre-requisite
+- Instance Specification: The inference time of the submitted model is measured using an AWS EC2 instance of type "g4dn.xlarge".
+- Execution of Inference Script: The submitted inference script will be executed in subprocess module of Python.
+- Evaluation Scope: The inference script is executed for these countries:
      - India
      - Japan
      - Norway
      - United_States
      - Overall_6_countries
-4. Consistency Check: To account for the variation in system measurement, the inference process will be repeated three times for each country. The average inference time from these runs will be used for evaluation.
-5. Inference Speed Calculation: For each country: Inference Speed = (Inference_Time) / (Number_of_Test_Images)
+- Consistency Check: To account for the variation in system measurement, the inference process will be repeated three times for each country. The average inference time from these runs will be used for evaluation.
+- Inference Speed Calculation: For each country: Inference Speed = (Inference_Time) / (Number_of_Test_Images)
 
 ## (1.) Create AWS EC2 instance of type "g4dn.xlarge"
 - Select AMI (OS): Deep Learning Base OSS Nvidia Driver GPU AMI (Ubuntu 22.04) 20240915
