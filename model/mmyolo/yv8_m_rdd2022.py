@@ -14,17 +14,17 @@ dict(type='WandbVisBackend', init_kwargs={
 # Train & Val - https://mmyolo.readthedocs.io/en/latest/get_started/15_minutes_object_detection.html
 #
 # ========================training configurations======================
-work_dir = './work_dirs/yolov8_m_rdd'
-max_epochs = 500
+work_dir = './work_dirs/yolov8_m_rdd_stg'
+max_epochs = 300
 # Disable mosaic augmentation for final 10 epochs (stage 2)
-close_mosaic_epochs = 20
-interval = 2
+stage2_num_epochs = 50
+interval = 5
 # Batch size of a single GPU during training
-train_batch_size_per_gpu = 4
+train_batch_size_per_gpu = 40
 val_batch_size_per_gpu = train_batch_size_per_gpu
 
 # -----data related-----
-data_root = '/home/rahul/workspace/data/rdd/coco/'
+data_root = '/home/rahul/workspace/vision/rdd/orddc2024/dataset/rdd2022/coco/'
 # Path of train annotation file
 train_ann_file = 'annotations/train.json'
 train_data_prefix = 'train/images/'  # Prefix of train image path
@@ -47,6 +47,7 @@ load_from = 'https://download.openmmlab.com/mmyolo/v0/yolov8/yolov8_m_syncbn_fas
 train_cfg = dict(
     max_epochs=max_epochs,
     val_interval=interval,
+    dynamic_intervals=[(max_epochs - stage2_num_epochs, 1)],
 )
 
 
@@ -160,6 +161,13 @@ optim_wrapper = dict(
         batch_size_per_gpu=train_batch_size_per_gpu),
     constructor='YOLOv5OptimizerConstructor')
 
+# hooks
+default_hooks = dict(
+    checkpoint=dict(
+        interval=interval,
+        max_keep_ckpts=30  # only keep latest 3 checkpoints
+    ))
+
 custom_hooks = [
     dict(
         type='EMAHook',
@@ -170,7 +178,7 @@ custom_hooks = [
         priority=49),
     dict(
         type='mmdet.PipelineSwitchHook',
-        switch_epoch=max_epochs - close_mosaic_epochs,
+        switch_epoch=max_epochs - stage2_num_epochs,
         switch_pipeline=train_pipeline_stage2)
 ]
 
