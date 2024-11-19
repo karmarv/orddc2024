@@ -1,3 +1,4 @@
+import math
 import os, csv
 import sys, time
 from tqdm import tqdm
@@ -25,9 +26,16 @@ def format_result_item(img_file, pred_instances, show_dir=None):
     """
     Read the predictions and format it into a submission string per image file
     """
+    FONT_SCALE = 15e-4  # Adjust for larger font size in all images
+    THICKNESS_SCALE = 2e-3  # Adjust for larger thickness in all images
+    TEXT_Y_OFFSET_SCALE = 1e-2  # Adjust for larger Y-offset of text and bounding box
+    height, width = 3, 3
     if show_dir is not None:
+        os.makedirs(show_dir, exist_ok=True)
         img = cv2.imread(img_file)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) 
+        #img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) 
+        height, width, _ = img.shape
+        
     pred_array = []
     for idx, pred in enumerate(pred_instances):
         scores = pred.scores.tolist()
@@ -37,8 +45,14 @@ def format_result_item(img_file, pred_instances, show_dir=None):
         x1,y1,x2,y2 = map(int, bboxes[0])
         pred_array.append([scores[0], labels[0], x1, y1, x2, y2])
         if show_dir is not None:
-            cv2.rectangle(img, (x1,y1), (x2,y2), (0,255,0), 3)
-            cv2.putText(img, "{}-{:.2f}".format(dataset_classes[labels[0]], scores[0]), (x1+2,y1+18), 0, 0.55, (0,255,0), 2)
+            cv2.rectangle(img, (x1,y1), (x2,y2), (0,255,0), 2)
+            cv2.putText(img, "{}-{:.2f}".format(dataset_classes[labels[0]], scores[0]),
+                        (x1, y1 - int(height * TEXT_Y_OFFSET_SCALE)),
+                        fontFace=cv2.FONT_HERSHEY_TRIPLEX,
+                        fontScale=min(width, height) * FONT_SCALE,
+                        thickness=math.ceil(min(width, height) * THICKNESS_SCALE),
+                        color=(0,255,0)
+                        )
     # Image overlayed results
     if show_dir is not None:
         cv2.imwrite(os.path.join(show_dir, "pred_{}".format(os.path.basename(img_file))), img)
@@ -65,11 +79,13 @@ def predict(model, inputs, pred_score_thr):
     """
     Run prediction using mmdetection inference detector for each image in test
     """
+    show_dir=None
+    #show_dir="./results"
     all_results = []
     results = inference_detector(model, inputs)
     for img_file, result_item in zip(inputs, results):
         pred_instances = result_item.pred_instances[result_item.pred_instances.scores > pred_score_thr]
-        pred_string = format_result_item(img_file, pred_instances, show_dir=None)
+        pred_string = format_result_item(img_file, pred_instances, show_dir)
         # Result row item format as per https://orddc2024.sekilab.global/submissions/
         all_results.append([os.path.basename(img_file), pred_string])
     return all_results
